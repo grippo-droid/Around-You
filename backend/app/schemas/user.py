@@ -32,6 +32,25 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     is_verified: bool = False
+    followers: list[str] = []
+    following: list[str] = []
+    followers_count: int = 0
+    following_count: int = 0
+    businesses_count: int = 0
+    created_at: datetime
+    
+    class Config:
+        populate_by_name = True
+        json_encoders = {datetime: lambda v: v.isoformat()}
+
+class PublicUserProfile(BaseModel):
+    id: PyObjectId = Field(alias="_id")
+    name: str
+    role: str
+    is_verified: bool
+    followers_count: int = 0
+    following_count: int = 0
+    businesses_count: int = 0
     created_at: datetime
 
     class Config:

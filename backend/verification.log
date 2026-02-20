@@ -1,0 +1,8 @@
+Starting verification...
+Import failed: No module named 'fastapi'
+Traceback (most recent call last):
+  File "E:\LETS COOK\Projects\Around_You\backend\verify_output.py", line 8, in <module>
+    from app.main import app
+  File "E:\LETS COOK\Projects\Around_You\backend\app\main.py", line 1, in <module>
+    from fastapi import FastAPI
+ModuleNotFoundError: No module named 'fastapi'

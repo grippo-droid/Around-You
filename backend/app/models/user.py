@@ -11,6 +11,8 @@ class UserModel(BaseModel):
     password_hash: str
     role: str = "user"  # user, business, admin
     is_verified: bool = False
+    followers: List[str] = []
+    following: List[str] = []
     followed_businesses: List[str] = []
     applied_jobs: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)

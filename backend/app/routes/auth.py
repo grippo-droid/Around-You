@@ -36,4 +36,16 @@ async def logout(response: Response):
 
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: UserModel = Depends(get_current_user)):
-    return ResponseModel.success(data=current_user)
+    user_dict = current_user.model_dump(by_alias=True)
+    user_dict["followers_count"] = len(current_user.followers)
+    user_dict["following_count"] = len(current_user.following)
+    
+    # Calculate business count
+    from app.config.database import get_database
+    from bson import ObjectId
+    db = get_database()
+    businesses_count = await db.businesses.count_documents({"owner_id": str(current_user.id)})
+    user_dict["businesses_count"] = businesses_count
+
+    # Ensure ObjectId conversion via Pydantic
+    return ResponseModel.success(data=UserResponse(**user_dict))

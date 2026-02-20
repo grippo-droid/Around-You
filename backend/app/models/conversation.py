@@ -1,15 +1,19 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from app.utils.object_id import PyObjectId
 
-class MessageModel(BaseModel):
+class ConversationParticipant(BaseModel):
+    id: PyObjectId
+    type: str # "user" or "business"
+
+class ConversationModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    conversation_id: PyObjectId
-    sender_id: PyObjectId
-    sender_type: str # "user" or "business"
-    content: str
+    participants: List[ConversationParticipant]
+    last_message: str
+    last_message_at: datetime
     created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:
         populate_by_name = True
