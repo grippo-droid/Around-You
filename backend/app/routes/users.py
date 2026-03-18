@@ -54,4 +54,20 @@ async def get_user_businesses(user_id: str):
     from app.schemas.business import BusinessResponse
     return ResponseModel.success(data=[BusinessResponse(**b) for b in businesses])
 
+@router.post("/bookmarks/{business_id}")
+async def toggle_bookmark(
+    business_id: str,
+    current_user: UserModel = Depends(get_current_user)
+):
+    success = await UserService.toggle_bookmark(str(current_user.id), business_id)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to toggle bookmark")
+    return ResponseModel.success(message="Bookmark updated successfully")
 
+@router.get("/me/bookmarks")
+async def get_my_bookmarks(
+    current_user: UserModel = Depends(get_current_user)
+):
+    businesses = await UserService.get_bookmarked_businesses(str(current_user.id))
+    from app.schemas.business import BusinessResponse
+    return ResponseModel.success(data=[BusinessResponse(**b) for b in businesses])

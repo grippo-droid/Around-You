@@ -14,6 +14,7 @@ class UserModel(BaseModel):
     followers: List[str] = []
     following: List[str] = []
     followed_businesses: List[str] = []
+    bookmarked_businesses: List[str] = []
     applied_jobs: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 

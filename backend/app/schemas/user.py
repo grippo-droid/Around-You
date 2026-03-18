@@ -37,6 +37,7 @@ class UserResponse(UserBase):
     followers_count: int = 0
     following_count: int = 0
     businesses_count: int = 0
+    bookmarked_businesses: list[str] = []
     created_at: datetime
     
     class Config:

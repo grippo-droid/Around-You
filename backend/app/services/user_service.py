@@ -101,3 +101,48 @@ class UserService:
         # Case-insensitive regex search
         cursor = db.users.find({"name": {"$regex": query, "$options": "i"}}).limit(20)
         return await cursor.to_list(length=None)
+
+    @staticmethod
+    async def toggle_bookmark(user_id: str, business_id: str) -> bool:
+        db = get_database()
+        user_doc = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user_doc:
+            return False
+
+        bookmarks = user_doc.get("bookmarked_businesses", [])
+        if business_id in bookmarks:
+            # Remove
+            await db.users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$pull": {"bookmarked_businesses": business_id}}
+            )
+        else:
+            # Add
+            await db.users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$addToSet": {"bookmarked_businesses": business_id}}
+            )
+        return True
+
+    @staticmethod
+    async def get_bookmarked_businesses(user_id: str):
+        db = get_database()
+        user_doc = await db.users.find_one({"_id": ObjectId(user_id)})
+        if not user_doc:
+            return []
+
+        bookmarks = user_doc.get("bookmarked_businesses", [])
+        if not bookmarks:
+            return []
+
+        # Find all businesses in the user's bookmarks list
+        # We need to map string IDs to ObjectIds if businesses use ObjectIds as _id
+        business_object_ids = []
+        for b_id in bookmarks:
+            try:
+                business_object_ids.append(ObjectId(b_id))
+            except:
+                pass
+                
+        cursor = db.businesses.find({"_id": {"$in": business_object_ids}})
+        return await cursor.to_list(length=None)
